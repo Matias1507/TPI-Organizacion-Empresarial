@@ -1,13 +1,24 @@
-# main.py - Sistema de Gestión de Pedidos "El Imperio"
+import csv
 
-# Datos simulados en memoria (Diccionario)
-inventario = {
-    "1": {"nombre": "Pirotines N°10", "precio": 800},
-    "2": {"nombre": "Film de PVC", "precio": 1200}
-}
+# Función para cargar el inventario desde el CSV
+def cargar_inventario():
+    inventario = {}
+    try:
+        with open('data/inventario.csv', mode='r', encoding='utf-8') as archivo:
+            lector = csv.DictReader(archivo)
+            for fila in lector:
+                inventario[fila['id']] = {
+                    "nombre": fila['nombre'],
+                    "precio": int(fila['precio'])
+                }
+    except FileNotFoundError:
+        print("Error: No se encontró el archivo de inventario.")
+    return inventario
+
+# Cargamos el inventario al iniciar
+inventario = cargar_inventario()
 
 def validar_numero(mensaje):
-    """Función para el manejo de excepciones (Camino Infeliz)"""
     while True:
         try:
             valor = int(input(mensaje))
@@ -19,7 +30,6 @@ def validar_numero(mensaje):
             print("ERROR: Ingrese una cantidad numérica válida.")
 
 def verificar_presupuesto(costo_total):
-    """Gateway de control administrativo"""
     LIMITE_PRESUPUESTO = 50000
     if costo_total > LIMITE_PRESUPUESTO:
         return "Pendiente_Aprobacion_Chelo"
@@ -28,32 +38,28 @@ def verificar_presupuesto(costo_total):
 def main():
     print("--- ImperioBot: Sistema de Pedidos ---")
     estado = "INICIO"
-    
+
     while True:
         if estado == "INICIO":
-            comando = input("Escribí 'pedido' para comenzar o '/exit' para salir: ").lower()
+            comando = input("Escriba 'pedido' para comenzar o 'salir' para cerrar: ").lower()
             if comando == "pedido":
-                estado = "SELECCION"
-            elif comando == "/exit":
+                estado = "PROCESO"
+            elif comando == "salir":
                 break
-                
-        elif estado == "SELECCION":
-            print("Categoría: Desechables")
-            print("1. Pirotines N°10 ($800) | 2. Film de PVC ($1200)")
-            opcion = input("Seleccioná el insumo (1 o 2): ")
+        
+        elif estado == "PROCESO":
+            print(f"Inventario disponible: {inventario}")
+            id_prod = input("Ingrese el ID del producto: ")
             
-            if opcion in inventario:
-                insumo = inventario[opcion]
-                cantidad = validar_numero("Ingresá la cantidad: ")
-                
-                costo = cantidad * insumo["precio"]
+            if id_prod in inventario:
+                cantidad = validar_numero("Ingrese cantidad: ")
+                costo = inventario[id_prod]["precio"] * cantidad
+                print(f"Total: ${costo}")
                 resultado = verificar_presupuesto(costo)
-                
-                print(f"Pedido realizado. Estado: {resultado}. Costo: ${costo}")
+                print(f"Estado del pedido: {resultado}")
                 estado = "INICIO"
             else:
-                print("Opción inválida.")
-                estado = "INICIO"
+                print("Producto no encontrado.")
 
 if __name__ == "__main__":
     main()
