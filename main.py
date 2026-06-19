@@ -1,22 +1,21 @@
 import csv
 
-# Función para cargar el inventario desde el CSV
 def cargar_inventario():
     inventario = {}
     try:
-        with open('data/inventario.csv', mode='r', encoding='utf-8') as archivo:
+        with open('inventario.csv', mode='r', encoding='utf-8') as archivo:
+            # DictReader ya sabe que la primera fila es el encabezado
             lector = csv.DictReader(archivo)
             for fila in lector:
+                # Accedemos a los datos por nombre de columna
+                # fila['id'] es el texto '1', fila['precio'] es el texto '800'
                 inventario[fila['id']] = {
                     "nombre": fila['nombre'],
                     "precio": int(fila['precio'])
                 }
-    except FileNotFoundError:
-        print("Error: No se encontró el archivo de inventario.")
+    except Exception as e:
+        print(f"Ocurrió un error al leer el archivo: {e}")
     return inventario
-
-# Cargamos el inventario al iniciar
-inventario = cargar_inventario()
 
 def validar_numero(mensaje):
     while True:
