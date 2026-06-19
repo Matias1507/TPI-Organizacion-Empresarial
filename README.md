@@ -21,4 +21,4 @@ Este repositorio contiene la simulación del sistema automatizado de reabastecim
 - **Arquitectura:** Basada en una Máquina de Estados Finita (FSM) para garantizar un flujo lógico y ordenado de la información.
 
 ## Nombre del creador:
-- [Kurtz Matias walter]
+- Kurtz Matias walter
